@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 import uuid
 from datetime import datetime
-import openai
+from openai import OpenAI
 import json
 import asyncio
 
@@ -21,8 +21,8 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
-# OpenAI configuration
-openai.api_key = os.environ.get('OPENAI_API_KEY')
+# OpenAI client
+openai_client = OpenAI(api_key=os.environ.get('OPENAI_API_KEY'))
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -117,7 +117,7 @@ Key guidelines:
 
 Remember: You're a caring health companion, not a doctor."""
 
-        response = await openai.ChatCompletion.acreate(
+        response = openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": system_prompt},
